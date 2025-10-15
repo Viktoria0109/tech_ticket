@@ -1,19 +1,22 @@
-from passlib.context import CryptContext
-from jose import jwt
-from datetime import datetime, timedelta
-from app.core.config import settings
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+class TokenData(BaseModel):
+    user_id: Optional[int] = None
+    role: Optional[int] = None
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
+
+class RegisterRequest(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: Optional[int] = 1  

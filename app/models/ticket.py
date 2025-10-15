@@ -4,11 +4,6 @@ from datetime import datetime
 from app.db.base import Base
 import enum
 
-class Priority(str, enum.Enum):
-    low = "Low"
-    medium = "Medium"
-    high = "High"
-    urgent = "Urgent"
 
 class Status(str, enum.Enum):
     new = "New"
@@ -21,13 +16,11 @@ class Ticket(Base):
     __tablename__ = "tickets"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(150), nullable=False)
-    description = Column(Text, nullable=False)
-    location = Column(String, nullable=True)
-    priority = Column(Enum(Priority), default=Priority.medium)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
     status = Column(Enum(Status), default=Status.new)
-    created_by_id = Column(Integer, ForeignKey("users.id"))
-    assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    user_id = Column(Integer, ForeignKey("users.id")) 
+    assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True) 
 
+    author = relationship("User", foreign_keys=[user_id])
+    assignee = relationship("User", foreign_keys=[assigned_to])
