@@ -2,11 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 
-class Priority(str, Enum):
-    low = "Low"
-    medium = "Medium"
-    high = "High"
-    urgent = "Urgent"
 
 class Status(str, Enum):
     new = "New"
@@ -15,20 +10,26 @@ class Status(str, Enum):
     resolved = "Resolved"
     closed = "Closed"
 
-class TicketCreate(BaseModel):
+class TicketBase(BaseModel):
     title: str
-    description: str
-    location: Optional[str] = None
-    priority: Priority = Priority.medium
+    description: Optional[str] = None
+    status: Status = Status.new
+    assigned_to: Optional[int] = None 
 
-class TicketRead(BaseModel):
+class TicketCreate(TicketBase):
+    user_id: int 
+
+class TicketUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[Status] = None
+    assigned_to: Optional[int] = None
+
+class TicketRead(TicketBase):
     id: int
-    title: str
-    description: str
-    location: Optional[str]
-    priority: Priority
-    status: Status
+    user_id: int
 
     class Config:
         orm_mode = True
+
 
