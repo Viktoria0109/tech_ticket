@@ -24,3 +24,5 @@ class Ticket(Base):
 
     author = relationship("User", foreign_keys=[user_id])
     assignee = relationship("User", foreign_keys=[assigned_to])
+    attachments = relationship("Attachment", back_populates="ticket")
+
