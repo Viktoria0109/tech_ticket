@@ -32,6 +32,17 @@
         </div>
     </nav>
     <div class="container">
+        {% if notifications %}
+        <div class="mb-3">
+            {% for n in notifications %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {{ n.message }}
+                <a href="/tickets/{{ n.ticket_id }}" class="btn btn-sm btn-outline-primary ms-2">Открыть</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert alert-info">
