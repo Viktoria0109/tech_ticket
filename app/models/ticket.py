@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Enum, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, Enum, ForeignKey, DateTime,  Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.base import Base
@@ -21,6 +21,8 @@ class Ticket(Base):
     status = Column(Enum(Status), default=Status.new)
     user_id = Column(Integer, ForeignKey("users.id")) 
     assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True) 
+    is_deleted = Column(Boolean, default=False)
+    deleted_at = Column(DateTime, nullable=True)
 
     author = relationship("User", foreign_keys=[user_id])
     assignee = relationship("User", foreign_keys=[assigned_to])
