@@ -10,4 +10,3 @@ app.include_router(tickets.router, prefix="/api/v1")
 
 Base.metadata.create_all(bind=engine)
 
-
