@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from app.db.base import Base
 from datetime import datetime
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -12,3 +13,5 @@ class User(Base):
     role = Column(Integer, default=1)  # 1=user, 2=manager, 3=technician, 4=admin
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    is_deleted = Column(Boolean, default=False)
+    deleted_at = Column(DateTime, nullable=True)
