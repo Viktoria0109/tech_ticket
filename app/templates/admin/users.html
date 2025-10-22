@@ -35,7 +35,7 @@
                 <form method="post" action="/admin/users/{{ user.id }}/role" style="display:inline;">
                     <select name="role" class="form-select form-select-sm d-inline w-auto">
                         {% for r in ['user', 'manager', 'technician', 'admin'] %}
-                        <option value="{{ r }}" {% if user.role==r %}selected{% endif %}>{{ r }}</option>
+                        <option value="{{ r }}" {% if user.role == r %}selected{% endif %}>{{ r }}</option>
                         {% endfor %}
                     </select>
                     <button type="submit" class="btn btn-sm btn-outline-primary">Сменить роль</button>
