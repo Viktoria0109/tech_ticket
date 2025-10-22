@@ -10,13 +10,13 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Заявки</a>
+            <a class="navbar-brand" href="/Users/derob/Desktop/1/tech_ticket/app/static/templates/tickets/list.html">Заявки</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="/tickets">Список</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tickets/create">Создать</a></li>
                     {% if current_user.role == 'admin' %}
-                    <li class="nav-item"><a class="nav-link" href="/admin">Админка</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Users/derob/Desktop/1/tech_ticket/app/static/templates/admin/dashboard.html">Админка</a></li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto">

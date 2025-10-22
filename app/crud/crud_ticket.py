@@ -32,7 +32,8 @@ def update_ticket(db: Session, ticket_id: int, ticket_data: TicketUpdate):
     return ticket
 
 def list_tickets(db: Session):
-    return db.query(Ticket).all()
+    return db.query(Ticket).filter(Ticket.is_deleted == False).all()
+
 
 def get_filtered_tickets(db: Session, status: str = None, priority: str = None, assigned_to: int = None, q: str = None):
     query = db.query(Ticket).filter(Ticket.is_deleted == False)
