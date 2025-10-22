@@ -11,10 +11,7 @@ app.include_router(tickets.router, prefix="/api/v1")
 
 Base.metadata.create_all(bind=engine)
 
-<<<<<<< HEAD
-=======
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
->>>>>>> main
+
