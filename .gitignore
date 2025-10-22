@@ -17,6 +17,7 @@ dev.db
 alembic.ini
 migrations/
 
+htmlcov/
 
 .idea/
 .vscode/
