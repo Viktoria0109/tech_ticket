@@ -10,13 +10,13 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Заявки</a>
+            <a class="navbar-brand" href="/Users/derob/Desktop/1/tech_ticket/app/static/templates/tickets/list.html">Заявки</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="/tickets">Список</a></li>
                     <li class="nav-item"><a class="nav-link" href="/tickets/create">Создать</a></li>
                     {% if current_user.role == 'admin' %}
-                    <li class="nav-item"><a class="nav-link" href="/admin">Админка</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Users/derob/Desktop/1/tech_ticket/app/static/templates/admin/dashboard.html">Админка</a></li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -32,6 +32,17 @@
         </div>
     </nav>
     <div class="container">
+        {% if notifications %}
+        <div class="mb-3">
+            {% for n in notifications %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {{ n.message }}
+                <a href="/tickets/{{ n.ticket_id }}" class="btn btn-sm btn-outline-primary ms-2">Открыть</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert alert-info">
