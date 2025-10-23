@@ -4,7 +4,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
 from app.core.config import settings
-
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.user import User
+from fastapi import Depends
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -42,3 +46,38 @@ def get_username_from_token(token: str) -> Optional[str]:
     if payload:
         return payload.get("sub")
     return None
+
+SECRET_KEY = "settings. SECRET_KEY" 
+ALGORITHM = "HS256"
+
+def verify_token(token: str) -> Optional[dict]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+   
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    payload = verify_token(token)
+    if not payload or "sub" not in payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный токен"
+        )
+    
+    username = payload["sub"]
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Пользователь не найден"
+        )
+    
+    return user
