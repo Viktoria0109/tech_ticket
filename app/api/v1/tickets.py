@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.schemas.ticket import TicketCreate, TicketRead
 from app.crud import crud_ticket
-from app.models.user import require_role
-
+from app.dependencies.roles import require_role
 
 router = APIRouter()
 

@@ -4,6 +4,7 @@ from app.schemas.user import UserCreate
 from fastapi import HTTPException
 from datetime import datetime
 from app.models.user import User
+from app.core.security import get_password_hash
 
 def create_user(db: Session, user_data: UserCreate) -> User:
     user = User(**user_data.dict())
@@ -40,4 +41,21 @@ def restore_user(db: Session, user_id: int):
         user.deleted_at = None
         db.commit()
         db.refresh(user)
+    return user
+
+
+def create_user_admin(db: Session, username: str, email: str, password: str, role: str, department: str):
+    hashed_pw = get_password_hash(password)
+    user = User(
+        username=username,
+        email=email,
+        hashed_password=hashed_pw,
+        role=role,
+        department=department,
+        is_active=True,
+        created_at=datetime.utcnow()
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
     return user

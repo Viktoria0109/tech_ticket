@@ -17,6 +17,9 @@ dev.db
 alembic.ini
 migrations/
 
+htmlcov/
 
 .idea/
 .vscode/
+
+.pytest_cache
