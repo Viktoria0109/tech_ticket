@@ -13,11 +13,12 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     db.refresh(user)
     return user
 
-def get_user_by_id(db: Session, user_id: int):
+def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(
-        User.id == user_id,
+        User.email == email,
         User.is_deleted == False
     ).first()
+
 
 def list_users(db: Session):
     return db.query(User).filter(User.is_deleted == False).all()

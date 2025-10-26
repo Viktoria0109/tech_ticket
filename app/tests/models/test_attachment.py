@@ -1,4 +1,5 @@
-from app.models.attachment import Attachment
+# -*- coding:utf-8 -*-
+from app.models import Attachment
 
 def test_attachment_path():
     attach = Attachment(
