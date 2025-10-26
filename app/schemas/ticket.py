@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 
-
 class Status(str, Enum):
     new = "New"
     assigned = "Assigned"
