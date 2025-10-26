@@ -4,7 +4,7 @@ from datetime import datetime
 from app.db.base import Base
 
 class History(Base):
-    tablename = "history"
+    __tablename__ = "history"
 
     id = Column(Integer, primary_key=True, index=True)
     ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=True)

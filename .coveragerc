@@ -1,0 +1,19 @@
+[run]
+omit =
+    */__init__.py
+    */main.py
+    */schemas/*
+    */core/*
+    */v1/*
+    */crud/*
+    */app/models/*
+    */dependencies/*
+    */db/base.py
+    */db/session.py
+    */core/config.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    raise NotImplementedError

@@ -1,9 +1,10 @@
-from app.models.ticket import Ticket
+# -*- coding: utf-8 -*-
+from app.models import Ticket
 
 def test_ticket_defaults():
     ticket = Ticket(
-        title="Ошибка входа",
-        description="Пользователь не может авторизоваться",
+        title="РћС€РёР±РєР° РІС…РѕРґР°",
+        description="РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РјРѕР¶РµС‚ Р°РІС‚РѕСЂРёР·РѕРІР°С‚СЊСЃСЏ",
         status="New",
         priority="High"
     )

@@ -1,11 +1,12 @@
-from app.models.notification import Notification
+# -*- coding: utf-8 -*-
+from app.models import Notification
 
 def test_notification_creation():
     note = Notification(
         user_id=1,
         ticket_id=2,
-        message="Назначен новый исполнитель"
+        message="РќР°Р·РЅР°С‡РµРЅ РЅРѕРІС‹Р№ РёСЃРїРѕР»РЅРёС‚РµР»СЊ"
     )
     assert note.is_read is False
-    assert "исполнитель" in note.message
+    assert "РёСЃРїРѕР»РЅРёС‚РµР»СЊ" in note.message
 

@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 import pytest
 from datetime import datetime
-from app.models.user import User
+from app.models import User
 
 def test_user_creation():
     user = User(
