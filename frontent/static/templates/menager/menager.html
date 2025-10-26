@@ -1,0 +1,68 @@
+﻿<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <script src="{{ url_for('static', path='js/main.js') }}"></script>
+</head>
+{% extends "base.html" %}
+{% block title %}Панель менеджера{% endblock %}
+{% block content %}
+<h2>Все заявки</h2>
+
+{% if tickets %}
+    {% for ticket in tickets %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        Заявка #{{ ticket.id }} — {{ ticket.title }}
+    </div>
+    <div class="card-body">
+        <p><strong>Описание:</strong> {{ ticket.description }}</p>
+        <p><strong>Место:</strong> {{ ticket.location or '—' }}</p>
+        <p><strong>Статус:</strong> {{ ticket.status }}</p>
+        <p><strong>Приоритет:</strong> {{ ticket.priority }}</p>
+        <p><strong>Создана:</strong> {{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+        <p>
+            <strong>Создатель:</strong>
+            {% if ticket.creator %}
+            <a href="/admin/users/{{ ticket.creator.id }}">{{ ticket.creator.username }}</a>
+            {% else %}
+            <span class="text-muted">—</span>
+            {% endif %}
+        </p>
+        <p>
+            <strong>Исполнитель:</strong>
+            {% if ticket.assignee %}
+            <a href="/admin/users/{{ ticket.assignee.id }}">{{ ticket.assignee.username }}</a>
+            {% else %}
+            <span class="text-muted">—</span>
+            {% endif %}
+        </p>
+
+        <h5>История заявки</h5>
+        {% if ticket.history %}
+        <ul class="list-group">
+            {% for entry in ticket.history %}
+            <li class="list-group-item">
+                <strong>{{ entry.timestamp.strftime('%d.%m.%Y %H:%M') }}</strong> —
+                {{ entry.action }}
+                {% if entry.user %}
+                от <a href="/admin/users/{{ entry.user.id }}">{{ entry.user.username }}</a>
+                {% endif %}
+                {% if entry.comment %}
+                <br><em>{{ entry.comment }}</em>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">История отсутствует.</p>
+        {% endif %}
+
+        <a href="/tickets/{{ ticket.id }}" class="btn btn-outline-primary mt-3">Открыть заявку</a>
+    </div>
+</div>
+    {% endfor %}
+{% else %}
+<p class="text-muted">Нет заявок для отображения.</p>
+{% endif %}
+{% endblock %}

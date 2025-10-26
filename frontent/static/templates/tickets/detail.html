@@ -1,0 +1,55 @@
+﻿<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <script src="{{ url_for('static', path='js/main.js') }}"></script>
+</head>
+<!DO{% extends "base.html" %}
+{% block title %}Заявка #{{ ticket.id }}{% endblock %}
+{% block content %}
+<body>
+    <h2>{{ ticket.title }}</h2>
+    <p><strong>Описание:</strong> {{ ticket.description }}</p>
+    <p><strong>Место:</strong> {{ ticket.location }}</p>
+    <p><strong>Статус:</strong> {{ ticket.status }}</p>
+    <p><strong>Приоритет:</strong> {{ ticket.priority }}</p>
+    <p><strong>Создана:</strong> {{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+
+    {% if ticket.attachments %}
+    <h4>Вложения:</h4>
+    <ul>
+        {% for file in ticket.attachments %}
+        <li><a href="{{ file.file_path }}" target="_blank">{{ file.filename }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h4>История:</h4>
+    <ul class="list-group">
+        {% for entry in ticket.history %}
+        <li class="list-group-item">
+            <strong>{{ entry.timestamp.strftime('%d.%m.%Y %H:%M') }}</strong> — {{ entry.user.email }}: {{ entry.action }}
+            {% if entry.comment %}<br><em>{{ entry.comment }}</em>{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if current_user.role in ['manager', 'technician'] %}
+    <form method="post" action="/tickets/{{ ticket.id }}/update" class="mt-4">
+        <div class="mb-3">
+            <label for="status" class="form-label">Изменить статус</label>
+            <select name="status" class="form-select">
+                {% for s in statuses %}
+                <option value="{{ s }}" {% if ticket.status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="comment" class="form-label">Комментарий</label>
+            <textarea name="comment" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+</body>
+{% endif %}
+{% endblock %}
