@@ -5,7 +5,7 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: Optional[int] = 1  # по умолчанию — обычный пользователь
+    role: Optional[int] = 1  
 
 class UserRead(BaseModel):
     id: int

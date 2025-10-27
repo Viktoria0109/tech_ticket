@@ -6,12 +6,17 @@ from datetime import datetime
 from app.models.user import User
 from app.core.security import get_password_hash
 
-def create_user(db: Session, user_data: UserCreate) -> User:
-    user = User(**user_data.dict())
-    db.add(user)
+def create_user(db: Session, user_data: UserCreate):
+    new_user = User(
+        name=user_data.name,
+        email=user_data.email,
+        password=get_password_hash(user_data.password),
+        role=user_data.role  
+    )
+    db.add(new_user)
     db.commit()
-    db.refresh(user)
-    return user
+    db.refresh(new_user)
+    return new_user
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(

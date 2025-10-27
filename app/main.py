@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from app.api.v1 import tickets
 from app.api.v1 import auth
@@ -9,14 +10,9 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-app.os
-
 app.include_router(tickets.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
-
 Base.metadata.create_all(bind=engine)
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+app.mount("/static", StaticFiles(directory="frontent/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 

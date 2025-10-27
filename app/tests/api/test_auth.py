@@ -8,15 +8,16 @@ client = TestClient(app)
 
 def test_register_user_success(mocker):
     mock_db = mocker.Mock()
-    mocker.patch("app.api.auth.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.auth.get_user_by_email", return_value=None)
-    mocker.patch("app.api.auth.create_user", return_value=mocker.Mock(id=123))
+    mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.crud.crud_user.get_user_by_email", return_value=None)
+    mocker.patch("app.crud.crud_user.create_user", return_value=mocker.Mock(id=123))
 
-    response = client.post("/register", json={
-        "email": "test@example.com",
-        "password": "securepassword",
-        "full_name": "Test User"
-    })
+    response = client.post("/api/v1/register", json={
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "securepassword",
+    "role": 1 
+})
 
     assert response.status_code == 200
     data = response.json()
@@ -29,9 +30,10 @@ def test_register_user_exists(mocker):
     mocker.patch("app.api.auth.get_user_by_email", return_value=mocker.Mock())
 
     response = client.post("/register", json={
-        "email": "test@example.com",
-        "password": "securepassword",
-        "full_name": "Test User"
+       "name": "Test User",
+       "email": "test@example.com",
+       "password": "securepassword",
+       "role": 1 
     })
 
     assert response.status_code == 400

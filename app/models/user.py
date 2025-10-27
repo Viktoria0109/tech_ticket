@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from app.db.base import Base
 from datetime import datetime
+from sqlalchemy.orm import relationship
+
 
 
 class User(Base):
@@ -15,3 +17,5 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime, nullable=True)
+
+    comments = relationship("Comment", back_populates="author")
