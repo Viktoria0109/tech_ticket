@@ -12,7 +12,6 @@ app = FastAPI()
 
 app.include_router(tickets.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
-Base.metadata.create_all(bind=engine)
 app.mount("/static", StaticFiles(directory="frontent/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
