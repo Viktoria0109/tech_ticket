@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
 from app.db.base import Base 
+
 class Comment(Base):
     __tablename__ = "comments"
 

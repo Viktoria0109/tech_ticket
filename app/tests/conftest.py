@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import Base  
-from app.dependencies import get_db 
+from app.db.base import Base  
+from app.db.session import get_db 
 from fastapi.testclient import TestClient
 from app.main import app 
 
