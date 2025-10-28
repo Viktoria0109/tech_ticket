@@ -15,7 +15,7 @@ def test_register_user_success(mocker):
     response = client.post("/api/v1/register", json={
     "name": "Test User",
     "email": "test@example.com",
-    "password": "securepassword",
+    "hashed_password": "securepassword",
     "role": 1 
 })
 
