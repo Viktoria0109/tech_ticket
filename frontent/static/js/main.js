@@ -15,4 +15,23 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    const modal = document.getElementById("authModal");
+    const openBtn = document.getElementById("openModal");
+    const closeBtn = document.querySelector(".close");
+
+    openBtn.onclick = () => {
+        modal.style.display = "block";
+    };
+
+    closeBtn.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+
 });
