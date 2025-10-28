@@ -21,6 +21,11 @@ def setup_database():
 @pytest.fixture()
 def db_session():
     db = TestingSessionLocal()
+
+    for table in reversed(Base.metadata.sorted_tables):
+        db.execute(table.delete())
+    db.commit()
+
     try:
         yield db
     finally:

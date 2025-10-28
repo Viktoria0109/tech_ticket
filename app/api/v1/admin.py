@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.db.base import SessionLocal
 from app.models import User
 from app.core.security import get_password_hash
 
@@ -11,7 +11,7 @@ def create_admin_if_not_exists():
         admin = User(
             name="Admin",
             email=admin_email,
-            password_hash=get_password_hash("admin123"),
+            hashed_password=get_password_hash("admin123"),
             role="admin",
             is_active=True
         )

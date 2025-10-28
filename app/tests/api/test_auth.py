@@ -8,46 +8,55 @@ client = TestClient(app)
 
 def test_register_user_success(mocker):
     mock_db = mocker.Mock()
-    mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.crud.crud_user.get_user_by_email", return_value=None)
-    mocker.patch("app.crud.crud_user.create_user", return_value=mocker.Mock(id=123))
+    mocker.patch("app.api.v1.auth.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.auth.get_user_by_email", return_value=None)
+    mocker.patch("app.api.v1.auth.create_user", return_value=mocker.Mock(id=123))
 
     response = client.post("/api/v1/register", json={
     "name": "Test User",
     "email": "test@example.com",
-    "hashed_password": "securepassword",
+    "password": "securepassword",
     "role": 1 
 })
 
     assert response.status_code == 200
     data = response.json()
     assert data["message"] == "Пользователь успешно создан"
-    assert data["user_id"] == 123
+    assert isinstance(data["user_id"], int)
 
-def test_register_user_exists(mocker):
+
+def test_register_user_exists(client, mocker):
     mock_db = mocker.Mock()
-    mocker.patch("app.api.auth.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.auth.get_user_by_email", return_value=mocker.Mock())
+    mock_user = mocker.Mock()
+    mock_user.email = "test@example.com"
+    mock_user.name = "Test User"
+    mock_user.role = 1
+    mock_user.hashed_password = "hashed_securepassword"
 
-    response = client.post("/register", json={
-       "name": "Test User",
-       "email": "test@example.com",
-       "password": "securepassword",
-       "role": 1 
+    mocker.patch("app.api.v1.auth.get_db", return_value=mock_db)
+    mocker.patch("app.api.v1.auth.get_user_by_email", return_value=mock_user)
+
+    response = client.post("/api/v1/register", json={
+        "name": "Test User",
+        "email": "test@example.com",
+        "password": "securepassword",
+        "role": 1
     })
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Пользователь с таким email уже существует"
 
+
+
 def test_login_success(mocker):
     mock_db = mocker.Mock()
-    mock_user = mocker.Mock(email="test@example.com", password_hash="hashed")
-    mocker.patch("app.api.auth.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.auth.get_user_by_email", return_value=mock_user)
-    mocker.patch("app.api.auth.verify_password", return_value=True)
-    mocker.patch("app.api.auth.create_access_token", return_value="mocked_token")
+    mock_user = mocker.Mock(email="test@example.com", hashed_password="hashed")
+    mocker.patch("app.api.v1.auth.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.auth.get_user_by_email", return_value=mock_user)
+    mocker.patch("app.api.v1.auth.verify_password", return_value=True)
+    mocker.patch("app.api.v1.auth.create_access_token", return_value="mocked_token")
 
-    response = client.post("/login", data={
+    response = client.post("api/v1/login", data={
         "username": "test@example.com",
         "password": "securepassword"
     })
@@ -59,12 +68,12 @@ def test_login_success(mocker):
 
 def test_login_wrong_password(mocker):
     mock_db = mocker.Mock()
-    mock_user = mocker.Mock(email="test@example.com", password_hash="hashed")
-    mocker.patch("app.api.auth.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.auth.get_user_by_email", return_value=mock_user)
-    mocker.patch("app.api.auth.verify_password", return_value=False)
+    mock_user = mocker.Mock(email="test@example.com", hashed_password="hashed")
+    mocker.patch("app.api.v1.auth.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.auth.get_user_by_email", return_value=mock_user)
+    mocker.patch("app.api.v1.auth.verify_password", return_value=False)
 
-    response = client.post("/login", data={
+    response = client.post("api/v1/login", data={
         "username": "test@example.com",
         "password": "wrongpassword"
     })

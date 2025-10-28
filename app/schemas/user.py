@@ -4,7 +4,7 @@ from typing import Optional
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
-    hashed_password: str
+    password: str
     role: Optional[int] = 1  
 
 class UserRead(BaseModel):
