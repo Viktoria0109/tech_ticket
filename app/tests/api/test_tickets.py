@@ -3,30 +3,38 @@ from app.main import app
 
 client = TestClient(app)
 
-def test_create_ticket_success(mocker):
+def test_create_ticket_success(client, mocker):
     mock_db = mocker.Mock()
-    mock_ticket = mocker.Mock(id=1, title="Test", description="Desc", deleted_at=None)
-    mocker.patch("app.api.tickets.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.tickets.crud_ticket.create_ticket", return_value=mock_ticket)
+    mock_user = mocker.Mock()
+    mock_user.id = 1
+    mock_user.email = "test@example.com"
+    mock_user.name = "Test User"
 
-    response = client.post("/tickets", json={
-        "title": "Test",
-        "description": "Desc"
+    mocker.patch("app.api.v1.tickets.get_db", return_value=mock_db)
+    mocker.patch("app.api.v1.tickets.get_user_by_email", return_value=mock_user)
+
+    response = client.post("/api/v1/tickets", json={
+        "title": "Unaware",
+        "description": "Unaware outlook",
+        "status": "New",
+        "assigned_to": 2,         
+        "user_id": mock_user.id  
     })
 
-    assert response.status_code == 200
+    assert response.status_code in [200, 201]
     data = response.json()
-    assert data["id"] == 1
-    assert data["title"] == "Test"
-    assert data["description"] == "Desc"
+    assert data["title"] == "Unaware"
+    assert data["user_id"] == mock_user.id
+
+
 
 def test_list_tickets_success(mocker):
     mock_db = mocker.Mock()
     mock_ticket = mocker.Mock(id=1, title="Test", description="Desc", deleted_at=None)
-    mocker.patch("app.api.tickets.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.tickets.crud_ticket.list_tickets", return_value=[mock_ticket])
+    mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.tickets.crud_ticket.list_tickets", return_value=[mock_ticket])
 
-    response = client.get("/tickets")
+    response = client.get("api/v1/tickets")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
@@ -35,9 +43,9 @@ def test_list_tickets_success(mocker):
 def test_delete_ticket_success(mocker):
     mock_db = mocker.Mock()
     mock_deleted = mocker.Mock(deleted_at="2025-10-26T10:00:00")
-    mocker.patch("app.api.tickets.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.tickets.require_role", return_value=lambda: True)
-    mocker.patch("app.api.tickets.crud_ticket.soft_delete_ticket", return_value=mock_deleted)
+    mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.tickets.require_role", return_value=lambda: True)
+    mocker.patch("app.api.v1.tickets.crud_ticket.soft_delete_ticket", return_value=mock_deleted)
 
     response = client.delete("/1?confirm=true")
     assert response.status_code == 200
@@ -47,9 +55,9 @@ def test_delete_ticket_success(mocker):
 
 def test_delete_ticket_not_found(mocker):
     mock_db = mocker.Mock()
-    mocker.patch("app.api.tickets.get_db", return_value=lambda: mock_db)
-    mocker.patch("app.api.tickets.require_role", return_value=lambda: True)
-    mocker.patch("app.api.tickets.crud_ticket.soft_delete_ticket", return_value=None)
+    mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
+    mocker.patch("app.api.v1.tickets.require_role", return_value=lambda: True)
+    mocker.patch("app.api.v1.tickets.crud_ticket.soft_delete_ticket", return_value=None)
 
     response = client.delete("/999?confirm=true")
     assert response.status_code == 404

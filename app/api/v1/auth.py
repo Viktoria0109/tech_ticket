@@ -16,7 +16,7 @@ async def login(
     db: Session = Depends(get_db)
 ):
     user = get_user_by_email(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.password_hash):
+    if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный email или пароль",
@@ -32,7 +32,6 @@ async def register(
     db: Session = Depends(get_db)
 ):
  
-
     existing_user = get_user_by_email(db, user_data.email)
     if existing_user:
         raise HTTPException(
@@ -40,7 +39,5 @@ async def register(
             detail="Пользователь с таким email уже существует"
         )
     
-
-
     user = create_user(db, user_data)
     return {"message": "Пользователь успешно создан", "user_id": user.id}

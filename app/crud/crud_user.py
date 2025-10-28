@@ -6,17 +6,19 @@ from datetime import datetime
 from app.models.user import User
 from app.core.security import get_password_hash
 
-def create_user(db: Session, user_data: UserCreate):
-    new_user = User(
-        name=user_data.name,
-        email=user_data.email,
-        password=get_password_hash(user_data.password),
-        role=user_data.role  
+def create_user(db: Session, user: UserCreate):
+    hashed_pw = get_password_hash(user.password)
+    db_user = User(
+        name=user.name,
+        email=user.email,
+        hashed_password=hashed_pw,
+        role=user.role
     )
-    db.add(new_user)
+    db.add(db_user)
     db.commit()
-    db.refresh(new_user)
-    return new_user
+    db.refresh(db_user)
+    return db_user
+
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(
@@ -50,8 +52,8 @@ def restore_user(db: Session, user_id: int):
     return user
 
 
-def create_user_admin(db: Session, username: str, email: str, password: str, role: str, department: str):
-    hashed_pw = get_password_hash(password)
+def create_user_admin(db: Session, username: str, email: str, hashed_password: str, role: str, department: str):
+    hashed_pw = get_password_hash(hashed_password)
     user = User(
         username=username,
         email=email,

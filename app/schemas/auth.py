@@ -12,11 +12,11 @@ class TokenData(BaseModel):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    hashed_password: str
 
 
 class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
-    password: str
+    hashed_password: str
     role: Optional[int] = 1  
