@@ -8,7 +8,7 @@ class Comment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=False)
-    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     text = Column(String, nullable=False)
     attachment_path = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

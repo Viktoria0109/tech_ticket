@@ -7,8 +7,9 @@ from datetime import datetime
 
 
 
-def create_ticket(db: Session, ticket: TicketCreate):
+def create_ticket(db: Session, ticket: TicketCreate, user_id: int):
     db_ticket = Ticket(**ticket.dict())
+    db_ticket.user_id = user_id
     db.add(db_ticket)
     db.commit()
     db.refresh(db_ticket)

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.api.v1 import tickets
 from app.api.v1 import auth
 from app.db.base import Base
-from app.db.session import engine
+from app.db.base import engine
 from app.models import user, ticket
 from app.models.comment import Comment
 from fastapi.staticfiles import StaticFiles
