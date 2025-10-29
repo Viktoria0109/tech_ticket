@@ -3,7 +3,9 @@ from fastapi import FastAPI, Depends, Request
 from . import models 
 from app.api.v1 import tickets
 from app.api.v1 import auth
-from app.db.session import Base, engine, get_db
+from app.db.base import Base
+from app.db.base import engine
+from app.db.session import get_db
 from app.models import user, ticket
 from app.models.comment import Comment
 from fastapi.staticfiles import StaticFiles

@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import StaticPool
 from app.core.config import settings
+from app.db.base import  SessionLocal
+#engine = create_engine(
+    #settings.DATABASE_URL,
+   # connect_args={"check_same_thread": False},
+   # poolclass=StaticPool
+#)
 
-engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool
-)
-
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+#SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 def get_db():
     db = SessionLocal()
