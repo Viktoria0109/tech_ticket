@@ -5,6 +5,8 @@ from app.schemas.ticket import TicketCreate, TicketRead
 from app.crud import crud_ticket
 from app.dependencies.roles import require_role
 from app.crud.crud_user import get_user_by_email
+from app.crud.crud_ticket import list_tickets, soft_delete_ticket
+from app.db.session import get_db
 
 router = APIRouter()
 

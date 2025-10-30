@@ -1,17 +1,17 @@
 
-from fastapi import FastAPI, Depends, Request,HTTPException
 from pathlib import Path
-from sqlalchemy.orm import Session
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 
 
-from . import models,schemas
-from app.api.v1 import tickets,auth
 from app.db.session import Base, engine, get_db
+from app.api.v1 import tickets, auth
+from app.api.v1.users import create_admin_if_not_exists
+from app import models, schemas
 from app.models import user, ticket
 from app.models.comment import Comment
-from app.api.v1.users import create_admin_if_not_exists
 
 app = FastAPI()
 

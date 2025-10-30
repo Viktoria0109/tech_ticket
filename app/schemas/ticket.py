@@ -16,7 +16,7 @@ class TicketBase(BaseModel):
     assigned_to: Optional[int] = None 
 
 class TicketCreate(TicketBase):
-    user_id: int 
+    pass
 
 class TicketUpdate(BaseModel):
     title: Optional[str] = None
