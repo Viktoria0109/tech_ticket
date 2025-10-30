@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session
 
 
 from app.db.session import Base, engine, get_db
-from app.api.v1 import tickets, auth
+from app.api.v1 import tickets, auth,users
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
 from app.models import user, ticket
 from app.models.comment import Comment
+
 
 app = FastAPI()
 
@@ -20,10 +21,13 @@ Base.metadata.create_all(bind=engine)
 
 
 BASE_DIR = Path(__file__).resolve().parent
+
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
+
+app.include_router(users.router, prefix="/api/v1")
 app.include_router(tickets.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 
