@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from fastapi.responses import HTMLResponse, JSONResponse
 
 
 from app.db.session import Base, engine, get_db
@@ -12,6 +13,8 @@ from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
 from app.models import user, ticket
 from app.models.comment import Comment
+from app.core.security import get_current_user
+from app.core.config import settings
 
 
 app = FastAPI()
@@ -31,14 +34,23 @@ app.include_router(users.router, prefix="/api/v1")
 app.include_router(tickets.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 
-@app.get("/")
-def read_root(db = Depends(get_db)):
-    return {"ok": True}
-
-
-@app.get("/")
-def read_root(request: Request):
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request, db: Session = Depends(get_db)):
+   
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse(content={"ok": True})
+    
+   
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/session-info")
+def session_info(current_user: user = Depends(get_current_user)):
+    return {
+        "message": f"Вы авторизованы как {current_user.username}",
+        "session_valid_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    }
+
                                       
 @app.post("/tickets", response_model=schemas.Ticket)
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
