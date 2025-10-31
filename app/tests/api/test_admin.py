@@ -1,4 +1,4 @@
-from app.api.v1.admin import create_admin_if_not_exists 
+from app.api.v1.users import create_admin_if_not_exists 
 from app.models import User
 
 
