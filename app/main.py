@@ -1,58 +1,58 @@
 
-from fastapi import FastAPI, Depends, Request
-from . import models 
-from app.api.v1 import tickets
-from app.api.v1 import auth
-from app.db.base import Base
-from app.db.base import engine
-from app.db.session import get_db
-from app.models import user, ticket
-from app.models.comment import Comment
+from pathlib import Path
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pathlib import Path
-from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from fastapi.responses import HTMLResponse, JSONResponse
+
+
+from app.db.base import Base
+from app.db.session import engine, get_db
+from app.api.v1 import tickets, auth,users
+from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
+from app.models import user, ticket
+from app.models.comment import Comment
+from app.core.security import get_current_user
+from app.core.config import settings
+
 
 app = FastAPI()
 
 
 Base.metadata.create_all(bind=engine)
-
-@app.get("/")
-def read_root(db = Depends(get_db)):
-    return {"ok": True}
-
-
-app.include_router(tickets.router, prefix="/api/v1")
-app.include_router(auth.router, prefix="/api/v1")
-
-
-Base.metadata.create_all(bind=engine)
-app.mount("/static", StaticFiles(directory="frontent/static"), name="static")
-templates = Jinja2Templates(directory="frontent/templates")
-
-app = FastAPI()
 
 
 BASE_DIR = Path(__file__).resolve().parent
 
-
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-
-
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
-@app.get("/")
-def read_root(request: Request):
+
+app.include_router(users.router, prefix="/api/v1")
+app.include_router(tickets.router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1")
+
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request, db: Session = Depends(get_db)):
+   
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse(content={"ok": True})
+    
+   
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/session-info")
+def session_info(current_user: user = Depends(get_current_user)):
+    return {
+        "message": f"Вы авторизованы как {current_user.username}",
+        "session_valid_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    }
+
                                       
-
-from app.api.v1.users import create_admin_if_not_exists
-
-
 @app.post("/tickets", response_model=schemas.Ticket)
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     db_ticket = models.Ticket(**ticket.dict())

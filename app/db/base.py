@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 from app.core.logger import logger
+from app.core.config import settings
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ print("DATABASE_URL =", DATABASE_URL)
 
 logger.info("Подключение к базе данных...")
 engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
+    settings.DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
 logger.info("Создание SessionLocal...")
