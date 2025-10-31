@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, JSONResponse
 
 
-from app.db.session import Base, engine, get_db
+from app.db.base import Base
+from app.db.session import engine, get_db
 from app.api.v1 import tickets, auth,users
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
