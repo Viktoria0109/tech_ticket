@@ -6,6 +6,7 @@ def test_ticket_defaults():
         title="Ошибка входа",
         description="Пользователь не может авторизоваться",
         status="New",
+        is_deleted=False
     )
     assert ticket.status == "New"
     assert ticket.is_deleted is False

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.base import SessionLocal
-from app.models import User
+from app.models import user
 from app.core.security import get_password_hash
 from app.db.session import get_db
 from app import schemas
@@ -10,9 +10,9 @@ from app.crud import crud_user
 def create_admin_if_not_exists():
     db: Session = SessionLocal()
     admin_email = "admin@example.com"
-    existing_admin = db.query(User).filter(User.email == admin_email).first()
+    existing_admin = db.query(user).filter(user.email == admin_email).first()
     if not existing_admin:
-        admin = User(
+        admin = user(
             name="Admin",
             email=admin_email,
             hashed_password=get_password_hash("admin123"),
