@@ -1,21 +1,19 @@
 
 from pathlib import Path
-
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from fastapi.responses import HTMLResponse, JSONResponse
 
-from app import models, schemas
-from app.api.v1 import auth, tickets, users
-from app.api.v1.users import create_admin_if_not_exists
-from app.core.config import settings
-from app.core.security import get_current_user
 from app.db.base import Base, engine
 from app.db.session import get_db
-from app.models import ticket, user
-from app.models.comment import Comment
+from app.api.v1 import tickets, auth, users
+from app import models, schemas
+from app.models import user, Ticket, Comment
+from app.core.security import get_current_user
+from app.core.config import settings
+
 
 app = FastAPI()
 
@@ -26,7 +24,7 @@ app.include_router(users.router, prefix="/api/v1")
 app.include_router(tickets.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 
-'''
+
 BASE_DIR = Path(__file__).resolve().parent
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
@@ -86,4 +84,3 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     db.delete(ticket)
     db.commit()
     return {"message": "Ticket deleted"}
-'''
