@@ -72,7 +72,7 @@ def test_delete_ticket_not_found(mocker):
     mock_db = mocker.Mock()
     mocker.patch("app.api.v1.tickets.get_db", return_value=lambda: mock_db)
     mocker.patch("app.api.v1.tickets.require_role", return_value=lambda: True)
-    mocker.patch("app.api.v1.tickets.crud_ticket.soft_delete_ticket", return_value=None)
+    mocker.patch("app.api.v1.tickets.soft_delete_ticket", return_value=None)
 
     response = client.delete("/api/v1/999?confirm=true")
     assert response.status_code == 404

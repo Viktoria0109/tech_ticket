@@ -4,12 +4,15 @@ body {
     font-family: "Segoe UI", sans-serif;
     margin-bottom: 60px;
     margin-left: 20px;
-    text-align: center;
     padding-top: 100px;
 }
 
+.body-n {
+    text-align: center;
+}
+
 h1, h2, h3, h4, h5 {
-    color: #ff0000;
+    color: rgb(0, 0, 0, 0,92);
     margin-top: 1rem;
 }
 
@@ -149,6 +152,9 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.4);
     z-index: 10;
     overflow: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Кнопка закрытия */
@@ -173,7 +179,7 @@ footer {
 .modal-content button {
     width: 100%;
     padding: 10px;
-    background-color: #198754;
+    background-color: #4a90e2;
     color: white;
     border: none;
     border-radius: 4px;
@@ -191,3 +197,168 @@ input {
     margin: 10px 0;
     box-sizing: border-box;
 }
+
+/* css для login, register*/
+.log-wrapper {
+    display: flex;
+    width: 900px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* для login */
+.log-left {
+    background: #4a90e2;
+    color: white;
+    width: 40%;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+    .log-left h2 {
+        margin-bottom: 10px;
+    }
+
+    .log-left p {
+        margin-bottom: 20px;
+    }
+
+.btn-light {
+    background: white;
+    color: #4a90e2;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+    .btn-light:hover {
+        background: #e0e0e0;
+    }
+
+.log-right {
+    width: 60%;
+    padding: 40px 30px;
+}
+
+    .log-right h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+    .input-group input {
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .input-group .icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #888;
+    }
+
+.forgot {
+    display: block;
+    text-align: right;
+    font-size: 14px;
+    color: #4a90e2;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+    .forgot:hover {
+        text-decoration: underline;
+    }
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .btn-primary:hover {
+        background: #357ab8;
+    }
+
+.divider {
+    text-align: center;
+    margin: 25px 0 15px;
+    color: #777;
+    font-size: 14px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+    .social-icons a {
+        background: #eee;
+        padding: 10px 14px;
+        border-radius: 50%;
+        font-size: 16px;
+        color: #333;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+        .social-icons a:hover {
+            background: #ccc;
+        }
+
+/* для register */
+.auth-left {
+    width: 60%;
+    padding: 40px 30px;
+    background: white;
+}
+
+    .auth-left h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+.auth-right {
+    width: 40%;
+    background: #4a90e2;
+    color: white;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+    .auth-right h2 {
+        margin-bottom: 10px;
+    }
+
+    .auth-right p {
+        margin-bottom: 20px;
+    }
