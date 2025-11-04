@@ -1,9 +1,9 @@
-from .auth import Token, TokenData, LoginRequest
+from .auth import Token, TokenData, LoginRequest,RegisterRequest
 from .user import UserCreate, UserRead
-from .ticket import TicketCreate, TicketUpdate, TicketRead, TicketBase
+from .ticket import TicketCreate, TicketUpdate, TicketRead, TicketBase, Status
 
 __all__ = [
-    "Token", "TokenData", "LoginRequest",
+    "Token", "TokenData", "LoginRequest","RegisterRequest",
     "UserCreate", "UserRead",
-    "TicketCreate", "TicketUpdate", "TicketRead", "TicketBase"
+    "TicketCreate", "TicketUpdate", "TicketRead", "TicketBase","Status"
 ]
