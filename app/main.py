@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, JSONResponse
-
+import os
 from app.db.base import Base, engine
 from app.db.session import get_db
 from app.api.v1 import tickets, auth, users
@@ -20,17 +20,13 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-app.include_router(users.router, prefix="/api/v1")
-app.include_router(tickets.router, prefix="/api/v1")
-app.include_router(auth.router, prefix="/api/v1")
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, '..', 'frontent')
 
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
-templates = Jinja2Templates(directory=BASE_DIR / "templates")
-
-
+app.mount("/static", StaticFiles(directory= os.path.join(FRONTEND_DIR, "static")), name="static")
+templates = Jinja2Templates(directory= os.path.join(FRONTEND_DIR, "templates"))
 
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(tickets.router, prefix="/api/v1")
@@ -54,7 +50,7 @@ def session_info(current_user: user = Depends(get_current_user)):
     }
 
                                       
-@app.post("/tickets", response_model=schemas.Ticket)
+@app.post("/tickets", response_model=schemas.TicketBase)
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     db_ticket = models.Ticket(**ticket.dict())
     db.add(db_ticket)
@@ -63,12 +59,12 @@ def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(get_db)):
     return db_ticket
 
 
-@app.get("/tickets", response_model=list[schemas.Ticket])
+@app.get("/tickets", response_model=list[schemas.TicketBase])
 def read_tickets(db: Session = Depends(get_db)):
     return db.query(models.Ticket).all()
 
 
-@app.get("/tickets/{ticket_id}", response_model=schemas.Ticket)
+@app.get("/tickets/{ticket_id}", response_model=schemas.TicketBase)
 def read_ticket(ticket_id: int, db: Session = Depends(get_db)):
     ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
     if not ticket:
