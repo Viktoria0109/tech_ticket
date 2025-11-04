@@ -27,6 +27,10 @@ a {
 /* Таблицы */
 .table {
     font-size: 0.95rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 13px;
+    overflow: hidden;
 }
 
     .table th, .table td {
@@ -60,6 +64,14 @@ textarea.form-control {
     min-height: 100px;
 }
 
+.filter-bar {
+    display: flex;
+    align-items: center; /* вертикальное выравнивание */
+    gap: 15px; /* расстояние между элементами */
+    margin-bottom: 20px;
+    width: 90%;
+}
+
 /* Кнопки */
 .btn {
     margin-right: 5px;
@@ -68,7 +80,37 @@ textarea.form-control {
 .btn-sm {
     font-size: 0.8rem;
     padding: 4px 8px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: bold;
 }
+
+.btn-z {
+    border: none;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btn-t {
+    width: 300px;
+    text-align: center;
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
 
 /* Алерты */
 .alert {
@@ -121,11 +163,12 @@ footer {
 /* Кнопка */
 .login-button {
     padding: 10px 20px;
-    background-color: #0d6efd;
+    background-color: #4a90e2;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-bottom: 5px;
 }
 
 /* Модальное окно */
@@ -140,6 +183,43 @@ footer {
     background-color: rgba(0,0,0,0.5);
 }
 
+/* Модальное окно для users*/
+.modal-u {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    width: 600px; /* увеличиваем ширину */
+    max-width: 90%; /* ограничиваем на маленьких экранах */
+    padding: 30px 40px; /* увеличиваем внутренние отступы */
+    font-size: 16px; /* увеличиваем читаемость */
+    border-radius: 20px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    z-index: 10;
+    overflow: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+/* Модальное окно для list*/
+.modal-l {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    width: 800px; /* увеличиваем ширину */
+    max-width: 90%; /* ограничиваем на маленьких экранах */
+    padding: 30px 40px; /* увеличиваем внутренние отступы */
+    font-size: 16px; /* увеличиваем читаемость */
+    border-radius: 20px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    z-index: 10;
+    overflow: hidden;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -30%)
+}
 /* Контент модального окна */
 .modal-content {
     position: relative;
@@ -233,7 +313,7 @@ input {
     background: white;
     color: #4a90e2;
     padding: 10px 20px;
-    border-radius: 25px;
+    border-radius: 10px;
     text-decoration: none;
     font-weight: bold;
     transition: background 0.3s;
@@ -362,3 +442,31 @@ input {
     .auth-right p {
         margin-bottom: 20px;
     }
+
+/* кнопки для страницы technic */
+.btn-done {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.btn-fail {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-done:hover {
+    background-color: #218838;
+}
+
+.btn-fail:hover {
+    background-color: #c82333;
+}
