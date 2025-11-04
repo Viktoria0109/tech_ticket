@@ -1,22 +1,24 @@
 
 import os
 from pathlib import Path
-from fastapi import (FastAPI,Depends,Request,HTTPException,status,
+from fastapi import (FastAPI,Depends,Request,HTTPException,status,Form
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from app.schemas import Token, LoginRequest
+from app.schemas import Token, LoginRequest, UserCreate
 from app.db.base import Base, engine
 from app.db.session import get_db, SessionLocal
 from app.api.v1 import tickets, auth, users
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
 from app.models import User, Ticket, Comment  
-from app.core.security import (get_current_user,verify_password,create_access_token,)
+from app.core.security import (get_current_user,verify_password,create_access_token, get_password_hash )
 from app.core.config import settings
+from app.crud.crud_user import get_user_by_email, create_user
+from app.models.user import hashed_password
 
 app = FastAPI()
 
@@ -128,4 +130,39 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     db.delete(ticket)
     db.commit()
     return {"message": "Ticket deleted"}
+
+
+@app.get("/register", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse(
+        "auth/register.html", {"request": request}
+    )
+
+@app.post("/register")
+async def register_user(
+    request: Request,
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    department: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    if get_user_by_email(db, email):
+            return templates.TemplateResponse(
+                "auth/register.html",
+                {"request": request, "error": "Email уже зарегистрирован"},
+                status_code=400
+            )
+
+    new_user = User(
+            username=username,
+            email=email,
+            department=department,
+            hashed_password=hashed_password(password)
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return RedirectResponse(url="/login", status_code=303)  
 
