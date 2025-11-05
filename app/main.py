@@ -15,10 +15,10 @@ from app.api.v1 import tickets, auth, users
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
 from app.models import User, Ticket, Comment  
-from app.core.security import (get_current_user,verify_password,create_access_token, get_password_hash )
+from app.core.security import (get_current_user,verify_password,create_access_token, hash )
 from app.core.config import settings
 from app.crud.crud_user import get_user_by_email, create_user
-from app.core.security import get_password_hash
+
 
 app = FastAPI()
 
@@ -158,7 +158,7 @@ async def register_user(
             username=username,
             email=email,
             department=department,
-            hashed_password=get_password_hash(password)
+            hashed_password=hash(password)
     )
     db.add(new_user)
     db.commit()
