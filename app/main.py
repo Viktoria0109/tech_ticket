@@ -18,7 +18,7 @@ from app.models import User, Ticket, Comment
 from app.core.security import (get_current_user,verify_password,create_access_token, get_password_hash )
 from app.core.config import settings
 from app.crud.crud_user import get_user_by_email, create_user
-from app.models.user import hashed_password
+from app.core.security import get_password_hash
 
 app = FastAPI()
 
@@ -158,7 +158,7 @@ async def register_user(
             username=username,
             email=email,
             department=department,
-            hashed_password=hashed_password(password)
+            hashed_password=get_password_hash(password)
     )
     db.add(new_user)
     db.commit()
