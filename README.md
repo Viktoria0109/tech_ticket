@@ -199,4 +199,11 @@
 - **requirements.txt**
   - список зависимостей для установки pip install -r requirements.txt.
   
+## Команды для запуска
+
+### Установка зависимостей
+pip install -r requirements.txt
+
+### Запуск приложения
+uvicorn app.main:app --reload
 
