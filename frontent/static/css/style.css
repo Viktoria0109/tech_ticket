@@ -123,6 +123,13 @@ textarea.form-control {
     color: #6c757d;
 }
 
+.list-group {
+    padding: 30px;
+    box-shadow: 
+        -5px -5px 5px rgba(0, 0, 0, 0.1), 
+        5px 5px 5px rgba(0,0,0,0.1);
+}
+
 /* Навигация */
 .navbar {
     margin-bottom: 20px;
@@ -186,8 +193,7 @@ footer {
 /* Модальное окно для users*/
 .modal-u {
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
+    background-color: white;
     width: 600px; /* увеличиваем ширину */
     max-width: 90%; /* ограничиваем на маленьких экранах */
     padding: 30px 40px; /* увеличиваем внутренние отступы */
@@ -205,8 +211,7 @@ footer {
 /* Модальное окно для list*/
 .modal-l {
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
+    background-color: white;
     width: 800px; /* увеличиваем ширину */
     max-width: 90%; /* ограничиваем на маленьких экранах */
     padding: 30px 40px; /* увеличиваем внутренние отступы */
@@ -469,4 +474,16 @@ input {
 
 .btn-fail:hover {
     background-color: #c82333;
+}
+
+/* для user */
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
 }
