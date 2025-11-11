@@ -182,3 +182,20 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db), current_user: U
     return {"message": "Ticket deleted"}
 
 
+@app.get("/admin", response_class=HTMLResponse)
+def admin_page(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("admin/admin.html", {"request": request, "user": current_user})
+
+@app.get("/user", response_class=HTMLResponse)
+def user_page(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("user/user.html", {"request": request, "user": current_user})
+
+@app.get("/menager", response_class=HTMLResponse)
+def manager_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_role([2, 4]))):
+    tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False).all()
+    return templates.TemplateResponse("menager/menager.html", {"request": request, "tickets": tickets, "user": current_user})
+
+@app.get("/technic", response_class=HTMLResponse)
+def technic_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_role([3, 4]))):
+    tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False, models.Ticket.assigned_to == current_user.id).all()
+    return templates.TemplateResponse("technic/technic.html", {"request": request, "tickets": tickets, "user": current_user})
