@@ -96,6 +96,44 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
         return RedirectResponse(url="/login")
     raise exc
 
+@app.get("/admin/users/add", response_class=HTMLResponse)
+def admin_add_user_page(request: Request, current_user: User = Depends(require_role(4))):
+    return templates.TemplateResponse("admin/add_user.html", {"request": request, "user": current_user})
+
+@app.post("/admin/users/create")
+def admin_create_user(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: int = Form(1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(4))
+):
+    user_in = schemas.UserCreate(name=name, email=email, password=password, role=role)
+    create_user(db, user_in)
+    return RedirectResponse(url="/admin/users", status_code=303)
+
+@app.get("/admin/users", response_class=HTMLResponse)
+def admin_users_list(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_role(4))):
+    users = list_users(db)
+    return templates.TemplateResponse("admin/users.html", {"request": request, "users": users, "user": current_user})
+
+@app.get("/register", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse("auth/register.html", {"request": request})
+
+@app.post("/register")
+async def register_user(request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    if get_user_by_email(db, email):
+        return templates.TemplateResponse("auth/register.html", {"request": request, "error": "Email уже зарегистрирован"}, status_code=400)
+    new_user = User(name=name, email=email, hashed_password=get_password_hash(password))
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return RedirectResponse(url="/login", status_code=303)
+
+
 @app.get("/session-info")
 def session_info(current_user: User = Depends(get_current_user)):
     return {
@@ -144,50 +182,4 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     return {"message": "Ticket deleted"}
 
 
-@app.get("/register", response_class=HTMLResponse)
-def register_page(request: Request):
-    return templates.TemplateResponse(
-        "auth/register.html", {"request": request}
-    )
 
-@app.post("/register")
-async def register_user(
-    request: Request,
-    username: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    department: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    if get_user_by_email(db, email):
-            return templates.TemplateResponse(
-                "auth/register.html",
-                {"request": request, "error": "Email уже зарегистрирован"},
-                status_code=400
-            )
-
-    new_user = User(
-            username=username,
-            email=email,
-            department=department,
-            hashed_password=get_password_hash(password)
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return RedirectResponse(url="/login", status_code=303) 
-
-
-
-
-@app.get("/admin", response_class=HTMLResponse)
-def admin_page(request: Request, current_user: User = Depends(get_current_user)):
-    #if current_user.role != 4:
-        #raise HTTPException(status_code=403)
-    return templates.TemplateResponse("admin/admin.html", {"request": request, "user": current_user})
-
-
-@app.get("/user", response_class=HTMLResponse)
-def user_page(request: Request, current_user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("user/user.html", {"request": request, "user": current_user})
