@@ -65,7 +65,6 @@ def login_form(request: Request, email: str = Form(...), password: str = Form(..
     if not db_user or not verify_password(password, db_user.hashed_password):
         return templates.TemplateResponse("auth/login.html", {"request": request, "error": "Неверный email или пароль"}, status_code=401)
 
-    # создаём токен и кладём туда id и роль
     token = create_access_token(data={"sub": str(db_user.id), "role": int(db_user.role)})
 
     redirect_url = ROLE_REDIRECT.get(int(db_user.role), "/")
@@ -81,20 +80,18 @@ def login_form(request: Request, email: str = Form(...), password: str = Form(..
     )
     return resp
 
+@app.get("/logout")
+def logout():
+    resp = RedirectResponse(url="/login", status_code=303)
+    resp.delete_cookie("access_token")
+    return resp
+
 @app.get("/", response_class=HTMLResponse)
-def read_root(
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "user": current_user}
-    )
+def read_root(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("index.html", {"request": request, "user": current_user})
 
 @app.exception_handler(StarletteHTTPException)
-async def custom_http_exception_handler(
-    request: Request, exc: StarletteHTTPException
-):
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 401:
         return RedirectResponse(url="/login")
     raise exc
