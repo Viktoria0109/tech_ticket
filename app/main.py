@@ -133,7 +133,6 @@ async def register_user(request: Request, name: str = Form(...), email: str = Fo
     db.refresh(new_user)
     return RedirectResponse(url="/login", status_code=303)
 
-
 @app.get("/session-info")
 def session_info(current_user: User = Depends(get_current_user)):
     return {
@@ -152,34 +151,34 @@ def create_ticket(
     return db_ticket
 
 
-@app.get("/tickets", response_model=list[schemas.TicketBase])
-def read_tickets(db: Session = Depends(get_db)):
-    return db.query(models.Ticket).all()
+@app.post("/tickets", response_model=schemas.ticket.TicketRead)
+def create_ticket_web(ticket: schemas.ticket.TicketCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db_ticket = models.Ticket(**ticket.dict())
+    db_ticket.user_id = current_user.id
+    db.add(db_ticket)
+    db.commit()
+    db.refresh(db_ticket)
+    return db_ticket
 
-@app.get("/tickets/{ticket_id}", response_model=schemas.TicketBase)
+@app.get("/tickets", response_model=list[schemas.ticket.TicketRead])
+def read_tickets(db: Session = Depends(get_db)):
+    return db.query(models.Ticket).filter(models.Ticket.is_deleted == False).all()
+
+@app.get("/tickets/{ticket_id}", response_model=schemas.ticket.TicketRead)
 def read_ticket(ticket_id: int, db: Session = Depends(get_db)):
-    ticket = (
-        db.query(models.Ticket)
-        .filter(models.Ticket.id == ticket_id)
-        .first()
-    )
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id, models.Ticket.is_deleted == False).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     return ticket
 
-
 @app.delete("/tickets/{ticket_id}")
-def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
-    ticket = (
-        db.query(models.Ticket)
-        .filter(models.Ticket.id == ticket_id)
-        .first()
-    )
+def delete_ticket(ticket_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
-    db.delete(ticket)
+    ticket.is_deleted = True
+    ticket.deleted_at = None
     db.commit()
     return {"message": "Ticket deleted"}
-
 
 
