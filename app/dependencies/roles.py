@@ -13,4 +13,3 @@ def require_role(required_roles: list[int]):
         return user
     return role_checker 
 
-

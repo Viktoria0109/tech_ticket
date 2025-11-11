@@ -1,69 +1,85 @@
+
 import os
 from pathlib import Path
-from fastapi import (FastAPI,Depends,Request,HTTPException,status,Form
-)
+from fastapi import FastAPI,Depends,Request,HTTPException,status,Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from app.schemas import Token, LoginRequest, UserCreate
-from app.db.base import Base, engine
+
+from app.db.base import init_db
 from app.db.session import get_db, SessionLocal
-from app.api.v1 import tickets, auth, users
+from app.api.v1 import tickets as ticket_router, auth as auth_router, users as users_router
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
-from app.models import User, Ticket, Comment  
-from app.core.security import (get_current_user,verify_password,create_access_token, get_password_hash )
+from app.dependencies.roles import require_role
+from app.models import User 
+from app.core.security import get_current_user, verify_password, create_access_token, get_password_hash
 from app.core.config import settings
-from app.crud.crud_user import get_user_by_email, create_user
-from app.core.security import get_password_hash
+from app.crud.crud_user import get_user_by_email, create_user, list_users
+
 
 app = FastAPI()
 
 @app.on_event("startup")
 def on_startup() -> None:
-    Base.metadata.create_all(bind=engine)
+    init_db()
     with SessionLocal() as db:
         create_admin_if_not_exists(db)
 
-app.include_router(users.router, prefix="/api/v1")
-app.include_router(tickets.router, prefix="/api/v1")
-app.include_router(auth.router, prefix="/api/v1")
+app.include_router(users_router.router, prefix="/api/v1")
+app.include_router(ticket_router.router, prefix="/api/v1")
+app.include_router(auth_router.router, prefix="/api/v1")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontent") 
 
-app.mount(
-    "/static",
-    StaticFiles(directory=os.path.join(FRONTEND_DIR, "static")),
-    name="static",
-)
-templates = Jinja2Templates(
-    directory=os.path.join(FRONTEND_DIR, "templates")
-)
+app.mount( "/static",StaticFiles(directory=os.path.join(FRONTEND_DIR, "static")),name="static",)
+templates = Jinja2Templates(directory=os.path.join(FRONTEND_DIR, "templates"))
 
 templates.env.globals["static_url"] = "/static"
 templates.env.globals["app_name"] = "Система заявок"
 
+@app.get("/favicon.ico")
+def favicon():
+    favicon_path = FRONTEND_DIR / "static" / "favicon.ico"
+    if favicon_path.exists():
+        return FileResponse(str(favicon_path))
+    raise HTTPException(status_code=404)
+
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse(
-        "auth/login.html", {"request": request}
-    )
+    return templates.TemplateResponse("auth/login.html", {"request": request})
 
-@app.post("/login", response_model=Token)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == payload.email).first()
-    if not db_user or not verify_password(
-        payload.password, db_user.hashed_password
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Неверный email или пароль",
-        )
-    access_token = create_access_token(data={"sub": str(db_user.id)})
-    return {"access_token": access_token}
+ROLE_REDIRECT = {
+    4: "/admin",       
+    2: "/menager",     
+    3: "/technic",     
+    1: "/user",        
+}
+
+@app.post("/login")
+def login_form(request: Request, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, email)
+    if not db_user or not verify_password(password, db_user.hashed_password):
+        return templates.TemplateResponse("auth/login.html", {"request": request, "error": "Неверный email или пароль"}, status_code=401)
+
+    # создаём токен и кладём туда id и роль
+    token = create_access_token(data={"sub": str(db_user.id), "role": int(db_user.role)})
+
+    redirect_url = ROLE_REDIRECT.get(int(db_user.role), "/")
+    resp = RedirectResponse(url=redirect_url, status_code=303)
+    resp.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        max_age=60*60*24,
+        samesite="lax",
+        secure=False,
+        path="/"
+    )
+    return resp
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(
