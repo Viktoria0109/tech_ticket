@@ -33,18 +33,22 @@
             <td>{{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
             <td>
                 {% if ticket.creator %}
-                <a href="/admin/users/{{ ticket.creator.id }}">{{ ticket.creator.username }}</a>
+                <a href="/admin/users/{{ ticket.creator.id }}">{{ ticket.creator.name }}</a>
                 {% else %}
                 <span class="text-muted">—</span>
                 {% endif %}
             </td>
+
+            <!--  Убрать в таблице Исполнителя? -->
             <td>
                 {% if ticket.assignee %}
-                <a href="/admin/users/{{ ticket.assignee.id }}">{{ ticket.assignee.username }}</a>
+                <a href="/admin/users/{{ ticket.assignee.id }}">{{ ticket.assignee.name }}</a>
                 {% else %}
                 <span class="text-muted">—</span>
                 {% endif %}
             </td>
+            <!---->
+
             <td>
                 <a href="/tickets/{{ ticket.id }}" class="btn btn-sm btn-outline-primary">Открыть</a>
             </td>
