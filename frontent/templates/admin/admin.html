@@ -13,9 +13,9 @@
     <div class="container-fluid">
         <a class="navbar-brand">Панель администратора</a>
         <ul class="navbar-nav ms-auto">
-            {% if current_user %}
-            <li class="nav-item"><span class="nav-link">{{ current_user.email }}</span></li>
-            <li class="nav-item"><a class="nav-link" href="/auth/login">Выход</a></li>
+            {% if user %}
+            <li class="nav-item"><span class="nav-link">{{ user.email }}</span></li>
+            <li class="nav-item"><a class="nav-link" href="/login">Выход</a></li>
             {% endif %}
         </ul>
     </div>
@@ -27,8 +27,10 @@
             <div class="card-header bg-primary text-white">Пользователи</div>
             <div class="card-body">
                 <p>Просмотр, редактирование и добавление пользователей.</p>
-                <a href="/users.html" class="btn btn-outline-primary">Список пользователей</a>
-                <a href="/add_user.html" class="btn btn-outline-success ms-2">Добавить пользователя</a>
+                <a href="/admin/users.html" class="btn btn-outline-primary">Список пользователей</a>
+
+                <!--  Страницы add нет, сделать ли это тоже модальным окном?  -->
+                <a href="/admin/users/add" class="btn btn-outline-success ms-2">Добавить пользователя</a>
             </div>
         </div>
     </div>
@@ -37,7 +39,7 @@
             <div class="card-header bg-info text-white">Заявки</div>
             <div class="card-body">
                 <p>Просмотр всех заявок и их исполнителей.</p>
-                <a href="/tickets/list.html" class="btn btn-outline-info">Список заявок</a>
+                <a href="/tickets/list" class="btn btn-outline-info">Список заявок</a>
             </div>
         </div>
     </div>
