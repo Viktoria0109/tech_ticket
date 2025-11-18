@@ -1,7 +1,7 @@
 
 import os
 from pathlib import Path
-from fastapi import FastAPI,Depends,Request,HTTPException,status,Form
+from fastapi import FastAPI, Depends, Request, HTTPException, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
@@ -14,11 +14,10 @@ from app.api.v1 import tickets as ticket_router, auth as auth_router, users as u
 from app.api.v1.users import create_admin_if_not_exists
 from app import models, schemas
 from app.dependencies.roles import require_role
-from app.models import User 
+from app.models import User
 from app.core.security import get_current_user, verify_password, create_access_token, get_password_hash
 from app.core.config import settings
 from app.crud.crud_user import get_user_by_email, create_user, list_users
-
 
 app = FastAPI()
 
@@ -32,11 +31,11 @@ app.include_router(users_router.router, prefix="/api/v1")
 app.include_router(ticket_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontent") 
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BASE_DIR.parent / "frontent"
 
-app.mount( "/static",StaticFiles(directory=os.path.join(FRONTEND_DIR, "static")),name="static",)
-templates = Jinja2Templates(directory=os.path.join(FRONTEND_DIR, "templates"))
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR / "static")), name="static")
+templates = Jinja2Templates(directory=str(FRONTEND_DIR / "templates"))
 
 templates.env.globals["static_url"] = "/static"
 templates.env.globals["app_name"] = "Система заявок"
@@ -53,10 +52,10 @@ def login_page(request: Request):
     return templates.TemplateResponse("auth/login.html", {"request": request})
 
 ROLE_REDIRECT = {
-    4: "/admin",       
-    2: "/menager",     
+    4: "/admin",      
+    2: "/menager",    
     3: "/technic",     
-    1: "/user",        
+    1: "/user",      
 }
 
 @app.post("/login")
@@ -65,6 +64,7 @@ def login_form(request: Request, email: str = Form(...), password: str = Form(..
     if not db_user or not verify_password(password, db_user.hashed_password):
         return templates.TemplateResponse("auth/login.html", {"request": request, "error": "Неверный email или пароль"}, status_code=401)
 
+    
     token = create_access_token(data={"sub": str(db_user.id), "role": int(db_user.role)})
 
     redirect_url = ROLE_REDIRECT.get(int(db_user.role), "/")
@@ -136,20 +136,9 @@ async def register_user(request: Request, name: str = Form(...), email: str = Fo
 @app.get("/session-info")
 def session_info(current_user: User = Depends(get_current_user)):
     return {
-        "message": f"Вы авторизованы как {current_user.username}",
+        "message": f"Вы авторизованы как {current_user.name}",
         "session_valid_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     }
-
-@app.post("/tickets", response_model=schemas.TicketBase)
-def create_ticket(
-    ticket: schemas.TicketCreate, db: Session = Depends(get_db)
-):
-    db_ticket = models.Ticket(**ticket.dict())
-    db.add(db_ticket)
-    db.commit()
-    db.refresh(db_ticket)
-    return db_ticket
-
 
 @app.post("/tickets", response_model=schemas.ticket.TicketRead)
 def create_ticket_web(ticket: schemas.ticket.TicketCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -181,7 +170,6 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db), current_user: U
     db.commit()
     return {"message": "Ticket deleted"}
 
-
 @app.get("/admin", response_class=HTMLResponse)
 def admin_page(request: Request, current_user: User = Depends(get_current_user)):
     return templates.TemplateResponse("admin/admin.html", {"request": request, "user": current_user})
@@ -192,10 +180,12 @@ def user_page(request: Request, current_user: User = Depends(get_current_user)):
 
 @app.get("/menager", response_class=HTMLResponse)
 def manager_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_role([2, 4]))):
+   
     tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False).all()
     return templates.TemplateResponse("menager/menager.html", {"request": request, "tickets": tickets, "user": current_user})
 
 @app.get("/technic", response_class=HTMLResponse)
 def technic_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(require_role([3, 4]))):
+   
     tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False, models.Ticket.assigned_to == current_user.id).all()
     return templates.TemplateResponse("technic/technic.html", {"request": request, "tickets": tickets, "user": current_user})

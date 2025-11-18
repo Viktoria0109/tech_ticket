@@ -12,17 +12,19 @@
     <div class="container-fluid">
         <a class="navbar-brand">Технический мастер</a>
         <ul class="navbar-nav ms-auto">
-            {% if current_user %}
-            <li class="nav-item"><span class="nav-link">{{ current_user.email }}</span></li>
+            {% if user %}
+            <li class="nav-item"><span class="nav-link">{{ user.email }}</span></li>
             <li class="nav-item"><a class="nav-link" href="/auth/login">Выход</a></li>
             {% endif %}
         </ul>
     </div>
 </nav>
 
+<!-- Нет выхода на Все заявки? -->
 <h3>Все заявки</h3>
 <br>
 <a href="tickets/list.html" class="btn-t">Заявки</a>
+<!---->
 
 <p>
 <br>
@@ -49,15 +51,18 @@
             <td>{{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
             <td>
                 {% if ticket.creator %}
-                <a href="/admin/users/{{ ticket.creator.id }}">{{ ticket.creator.username }}</a>
+                <a href="/admin/users/{{ ticket.creator.id }}">{{ ticket.creator.name }}</a>
                 {% else %}
                 <span class="text-muted">—</span>
                 {% endif %}
             </td>
             <td>
-
-                <button class="btn-done">Выполнено</button>
-                <button class="btn-fail">Не выполнено</button>
+                <form method="post" action="/tickets/{{ ticket.id }}/complete" style="display:inline;">
+                    <button class="btn-done">Выполнено</button>
+                </form>
+                <form method="post" action="/tickets/{{ ticket.id }}/fail" style="display:inline;">
+                    <button class="btn-fail">Не выполнено</button>
+                </form>
             </td>
         </tr>
         {% endfor %}

@@ -11,7 +11,7 @@
             <h2>Регистрация</h2>
             <form method="post" action="/register">
                     <div class="input-group">
-                        <input type="text" name="username" placeholder="Имя пользователя" required>
+                        <input type="text" name="name" placeholder="Имя пользователя" required>
                     </div>
                     <div class="input-group">
                         <input type="email" name="email" placeholder="Email" required>
@@ -19,9 +19,13 @@
                     <div class="input-group">
                         <input type="password" name="password" placeholder="Пароль" required>
                     </div>
+
+                <!-- Отдел не нужен? -->
                     <div class="input-group">
                         <input type="text" name="department" placeholder="Отдел" required>
                     </div>
+                <!---->
+
                     <button type="submit" class="btn btn-primary">Регистрация</button>
                     </form>
         </div>
