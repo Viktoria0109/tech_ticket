@@ -5,18 +5,16 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-
 class TokenData(BaseModel):
     user_id: Optional[int] = None
     role: Optional[int] = None
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    hashed_password: str
-
+    password: str
 
 class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
-    hashed_password: str
-    role: Optional[int] = 1  
+    password: str
+    role: Optional[int] = 1

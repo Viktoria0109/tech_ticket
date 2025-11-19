@@ -5,7 +5,7 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: Optional[int] = 1  
+    role: Optional[int] = 1
 
 class UserRead(BaseModel):
     id: int
@@ -13,6 +13,4 @@ class UserRead(BaseModel):
     email: EmailStr
     role: int
 
-    class Config:
-        from_attributes = True
-
+    model_config = {"from_attributes": True}

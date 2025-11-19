@@ -13,6 +13,4 @@ class AttachmentRead(BaseModel):
     uploaded_by: int
     uploaded_at: datetime
 
-    class Config:
-        from_attributes = True
-
+    model_config = {"from_attributes": True}
