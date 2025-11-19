@@ -13,6 +13,7 @@ class Attachment(Base):
     uploaded_at = Column(DateTime, default=datetime.utcnow)
 
     ticket = relationship("Ticket", back_populates="attachments")
+    uploaded_by_user = relationship("User", back_populates="attachments")
 
     
 

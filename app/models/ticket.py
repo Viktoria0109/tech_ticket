@@ -4,7 +4,6 @@ from datetime import datetime
 from app.db.base import Base
 import enum
 
-
 class Status(str, enum.Enum):
     new = "New"
     assigned = "Assigned"
@@ -24,7 +23,9 @@ class Ticket(Base):
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime, nullable=True)
 
+    author = relationship("User", foreign_keys=[user_id], back_populates="tickets")
+    assignee = relationship("User", foreign_keys=[assigned_to], back_populates="assigned_tickets")
+
     comments = relationship("Comment", back_populates="ticket")
-    author = relationship("User", foreign_keys=[user_id])
-    assignee = relationship("User", foreign_keys=[assigned_to])
     attachments = relationship("Attachment", back_populates="ticket")
+

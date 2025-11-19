@@ -3,8 +3,6 @@ from app.db.base import Base
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
-
-
 class User(Base):
     __tablename__ = "users"
 
@@ -18,4 +16,16 @@ class User(Base):
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime, nullable=True)
 
+    tickets = relationship(
+        "Ticket",
+        back_populates="author",
+        primaryjoin="User.id==Ticket.user_id"
+    )
+    assigned_tickets = relationship(
+        "Ticket",
+        back_populates="assignee",
+        primaryjoin="User.id==Ticket.assigned_to"
+    )
+
     comments = relationship("Comment", back_populates="author")
+    attachments = relationship("Attachment", back_populates="uploaded_by_user")
