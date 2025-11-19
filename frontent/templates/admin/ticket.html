@@ -39,7 +39,7 @@
                 {% endif %}
             </td>
 
-            <!--  Убрать в таблице Исполнителя? -->
+            
             <td>
                 {% if ticket.assignee %}
                 <a href="/admin/users/{{ ticket.assignee.id }}">{{ ticket.assignee.name }}</a>
@@ -47,7 +47,7 @@
                 <span class="text-muted">—</span>
                 {% endif %}
             </td>
-            <!---->
+           
 
             <td>
                 <a href="/tickets/{{ ticket.id }}" class="btn btn-sm btn-outline-primary">Открыть</a>
