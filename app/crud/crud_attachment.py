@@ -4,8 +4,12 @@ from app.schemas.attachment import AttachmentCreate
 
 def create_attachment(db: Session, data: AttachmentCreate):
     attachment = Attachment(**data.dict())
-    db.add(attachment)
-    db.commit()
-    db.refresh(attachment)
-    return attachment
+    try:
+        db.add(attachment)
+        db.commit()
+        db.refresh(attachment)
+        return attachment
+    except Exception:
+        db.rollback()
+        raise
 
