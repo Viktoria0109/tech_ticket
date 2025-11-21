@@ -1,37 +1,37 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const alerts = document.querySelectorAll(".alert");
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            alert.style.display = "none";
-        }, 5000);
-    });
+﻿document.addEventListener("DOMContentLoaded", function () {
+    // Авто‑скрытие alert
+    document.querySelectorAll(".alert").forEach(a => setTimeout(() => a.style.display = "none", 5000));
 
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(input => {
+    // Файловые инпуты
+    document.querySelectorAll('input[type="file"]').forEach(input => {
         input.addEventListener("change", function () {
-            const label = this.nextElementSibling;
-            if (this.files.length > 0) {
-                label.textContent = this.files[0].name;
+            let label = this.nextElementSibling;
+            if (!label || label.tagName.toLowerCase() !== 'label') {
+                label = this.parentElement ? this.parentElement.querySelector('label') : null;
             }
+            if (label) label.textContent = this.files && this.files.length ? this.files[0].name : 'Выберите файл';
         });
     });
 
-    const modal = document.getElementById("authModal");
-    const openBtn = document.getElementById("openModal");
-    const closeBtn = document.querySelector(".close");
+    // Универсальная логика модалок по data-modal-target
+    document.querySelectorAll('[data-modal-target]').forEach(btn => {
+        const selector = btn.getAttribute('data-modal-target');
+        const modal = document.querySelector(selector);
+        if (!modal) return;
+        btn.addEventListener('click', () => modal.style.display = 'block');
+    });
 
-    openBtn.onclick = () => {
-        modal.style.display = "block";
-    };
+    // Закрытие модалок по элементам с классом close внутри .modal
+    document.querySelectorAll('.modal .close').forEach(btn => {
+        const modal = btn.closest('.modal');
+        if (!modal) return;
+        btn.addEventListener('click', () => modal.style.display = 'none');
+    });
 
-    closeBtn.onclick = () => {
-        modal.style.display = "none";
-    };
-
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
-
+    // Закрытие при клике вне содержимого
+    window.addEventListener('click', (e) => {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    });
 });
