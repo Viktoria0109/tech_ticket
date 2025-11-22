@@ -6,19 +6,13 @@
     <script src="{{ request.url_for('static', path='/js/main.js') }}"></script>
 </head>
 {% extends "base.html" %}
-{% block title %}Пользователь{% endblock %}
+{% block title %}Панель пользователя{% endblock %}
+
+{% block page_header %}
+<!-- Подзаголовок страницы: выводится под общей навигацией -->
+<h2 class="mb-4">Панель пользователя</h2>
+{% endblock %}
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand">Пользователь</a>
-        <ul class="navbar-nav ms-auto">
-            {% if user %}
-            <li class="nav-item"><span class="nav-link">{{ user.email }}</span></li>
-            <li class="nav-item"><a class="nav-link" href="/auth/login">Выход</a></li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
 
 <body>
     <div class="container">
@@ -52,13 +46,15 @@
             <form method="post" action="/create-ticket">
                 <input type="text" name="title" placeholder="Заголовок" required>
                 <textarea name="description" placeholder="Описание" required></textarea>
-                <select name="priority" class="form-select">
-                    <option value="Низкий">Низкий</option>
-                    <option value="Средний">Средний</option>
-                    <option value="Высокий">Высокий</option>
+                <label for="priority">Приоритет:</label>
+                <select name="priority" id="priority">
+                    <option value="низкий">Низкий</option>
+                    <option value="средний" selected>Средний</option>
+                    <option value="высокий">Высокий</option>
                 </select>
                 <button type="submit" class="login-button">Отправить</button>
             </form>
         </div>
     </div>
 </body>
+{% endblock %}
