@@ -5,52 +5,31 @@
     <link rel="stylesheet" href="{{ request.url_for('static', path='/css/style.css') }}">
     <script src="{{ request.url_for('static', path='/js/main.js') }}"></script>
 </head>
-<body class="body-n">
-    <div class="log-wrapper">
-        <div class="log-left">
-            <h2>С возвращением!</h2>
-            <br>
-            <p>У Вас нет учетной записи?</p>
-            <a href="/register" class="btn-light">Регистрация</a>
-        </div>
-
-        <div class="log-right">
-            <h2>Вход</h2>
-            <form>
-                <div class="input-group">
-                    <input type="text" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" placeholder="Пароль" required>
-                </div>
-                <button type="submit" class="btn-primary">Вход</button>
-            </form>
-            <script>
-                async function submitLogin() {
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
-                    const message = document.getElementById('message');
-
-                    const response = await fetch('/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email, password })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        message.style.color = 'green';
-                        message.textContent = 'Успешный вход!';
-                        // можно сделать redirect: window.location.href = "/dashboard";
-                    } else {
-                        message.style.color = 'red';
-                        message.textContent = result.error || 'Ошибка авторизации';
-                    }
-                }
-            </script>
-        </div>
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<div class="log-wrapper row">
+    <div class="col-md-6 log-left">
+        <h2>С возвращением!</h2>
+        <p>У Вас нет учетной записи?</p>
+        <a href="/register" class="btn btn-light">Регистрация</a>
     </div>
-</body>
+
+    <div class="col-md-6 log-right">
+        <h2>Вход</h2>
+        <form method="post" action="/login">
+            <div class="input-group mb-2">
+                <input id="email" name="email" type="email" placeholder="Email" required class="form-control">
+            </div>
+            <div class="input-group mb-2">
+                <input id="password" name="password" type="password" placeholder="Пароль" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Вход</button>
+        </form>
+
+        {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
