@@ -7,28 +7,22 @@
 </head>
 {% extends "base.html" %}
 {% block title %}Панель администратора{% endblock %}
+
+{% block page_header %}
+<!-- Подзаголовок страницы: выводится под общей навигацией -->
+<h2 class="mb-4">Панель администратора</h2>
+{% endblock %}
+
 {% block content %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand">Панель администратора</a>
-        <ul class="navbar-nav ms-auto">
-            {% if user %}
-            <li class="nav-item"><span class="nav-link">{{ user.email }}</span></li>
-            <li class="nav-item"><a class="nav-link" href="/login">Выход</a></li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
-<br>
 <div class="row g-4">
-    <div class="col-md-100%">
+    <div class="col-12">
+        <!-- Карточка для управления пользователями -->
         <div class="card border-primary">
             <div class="card-header bg-primary text-white">Пользователи</div>
             <div class="card-body">
                 <p>Просмотр, редактирование и добавление пользователей.</p>
-                <a href="/admin/users.html" class="btn btn-outline-primary">Список пользователей</a>
-
+                <a href="/admin/users" class="btn btn-outline-primary">Список пользователей</a>
                 <button id="openLogin" class="btn btn-outline-success ms-2">Добавить пользователя</button>
                 <!-- Модальное окно -->
                 <div id="loginModal" class="modal">
@@ -74,18 +68,20 @@
                         if (e.target == modal) modal.style.display = "none";
                     };
                 </script>
-
             </div>
         </div>
     </div>
-    <div class="col-md-100%">
-        <div class="card border-info">
+    <div class="col-12">
+    <!-- Карточка для заявок -->
+        <div class="card border-info mt-3">
             <div class="card-header bg-info text-white">Заявки</div>
             <div class="card-body">
                 <p>Просмотр всех заявок и их исполнителей.</p>
+                <!-- исправлено: ссылка ведёт на HTML-страницу -->
                 <a href="/tickets/list" class="btn btn-outline-info">Список заявок</a>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
