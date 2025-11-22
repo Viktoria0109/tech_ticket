@@ -223,7 +223,7 @@ footer {
     overflow: hidden;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -30%)
+    transform: translate(-50%, -35%)
 }
 /* Контент модального окна */
 .modal-content {
