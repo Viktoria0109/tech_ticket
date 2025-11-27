@@ -71,6 +71,7 @@ def create_user_admin(db: Session, name: str, email: str, password: str, role: i
         is_active=True,
         created_at=datetime.utcnow()
     )
+
     try:
         db.add(user)
         db.commit()

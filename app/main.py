@@ -33,6 +33,7 @@ app.include_router(auth_router.router, prefix="/api/v1")
 
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR.parent / "frontent"
+ALLOWED_PRIORITIES = ["низкий", "средний", "высокий"]
 
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(FRONTEND_DIR / "templates"))
@@ -140,6 +141,73 @@ def session_info(current_user: User = Depends(get_current_user)):
         "session_valid_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     }
 
+# Страница назначения заявки
+@app.get("/tickets/{ticket_id}/assign", response_class=HTMLResponse)
+def assign_ticket_page(
+    request: Request,
+    ticket_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([2, 4]))  # менеджер или админ
+):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    # список доступных техников (роль = 3)
+    technicians = db.query(models.User).filter(models.User.role == 3).all()
+
+    return templates.TemplateResponse(
+        "tickets/assign.html",
+        {
+            "request": request,
+            "ticket": ticket,
+            "technicians": technicians,
+            "user": current_user
+        }
+    )
+
+# Обработчик назначения заявки
+@app.post("/tickets/{ticket_id}/assign")
+def assign_ticket(
+    ticket_id: int,
+    technician_id: int = Form(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role([2, 4]))  # менеджер или админ
+):
+    ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    ticket.assigned_to = technician_id
+    db.commit()
+    return RedirectResponse(url="/tickets/list", status_code=303)
+
+@app.post("/create-ticket", response_class=HTMLResponse)
+def create_ticket_form(
+    request: Request,
+    title: str = Form(...),
+    description: str = Form(...),
+    priority: str = Form("средний"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # нормализуем ввод
+    priority = priority.lower()
+
+    if priority not in ALLOWED_PRIORITIES:
+        raise HTTPException(status_code=400, detail="Недопустимый приоритет")
+
+    db_ticket = models.Ticket(
+        title=title,
+        description=description,
+        priority=priority,
+        user_id=current_user.id
+    )
+    db.add(db_ticket)
+    db.commit()
+    db.refresh(db_ticket)
+    return RedirectResponse(url="/tickets/list", status_code=303)
+
 @app.post("/tickets", response_model=schemas.ticket.TicketRead)
 def create_ticket_web(ticket: schemas.ticket.TicketCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_ticket = models.Ticket(**ticket.dict())
@@ -152,6 +220,31 @@ def create_ticket_web(ticket: schemas.ticket.TicketCreate, db: Session = Depends
 @app.get("/tickets", response_model=list[schemas.ticket.TicketRead])
 def read_tickets(db: Session = Depends(get_db)):
     return db.query(models.Ticket).filter(models.Ticket.is_deleted == False).all()
+
+@app.get("/tickets/list", response_class=HTMLResponse)
+def tickets_list_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # 1. Получаем все заявки из базы, которые не удалены
+    tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False).all()
+
+    # 2. Определяем возможные статусы и приоритеты для фильтра
+    statuses = ["новая", "в работе", "закрыта"]
+    priorities = ["низкий", "средний", "высокий"]
+
+    # 3. Передаём данные в шаблон ticket/list.html
+    return templates.TemplateResponse(
+        "tickets/list.html",
+        {
+            "request": request,
+            "tickets": tickets,          # список заявок
+            "statuses": statuses,        # список статусов
+            "priorities": priorities,    # список приоритетов
+            "current_user": current_user # текущий пользователь
+        }
+    )
 
 @app.get("/tickets/{ticket_id}", response_model=schemas.ticket.TicketRead)
 def read_ticket(ticket_id: int, db: Session = Depends(get_db)):
@@ -189,3 +282,4 @@ def technic_page(request: Request, db: Session = Depends(get_db), current_user: 
    
     tickets = db.query(models.Ticket).filter(models.Ticket.is_deleted == False, models.Ticket.assigned_to == current_user.id).all()
     return templates.TemplateResponse("technic/technic.html", {"request": request, "tickets": tickets, "user": current_user})
+
