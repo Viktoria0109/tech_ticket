@@ -33,6 +33,7 @@
         <button type="submit" class="btn btn-primary">Фильтр</button>
     </div>
 </form>
+
 <table class="table table-bordered table-hover">
     <thead class="table-dark">
         <tr>
@@ -52,12 +53,43 @@
             <td>{{ ticket.priority }}</td>
             <td>{{ ticket.created_at.strftime('%d.%m.%Y') }}</td>
             <td>
-                <a href="/tickets/{{ ticket.id }}/assign" class="btn btn-outline-secondary btn-sm">Распределить</a>
-            </td>
-            <td>
-                <button id="openLogin" class="btn btn-outline-primary btn-sm">Открыть</button>
+                
+                <button id="openLogin" class="btn btn-outline-primary btn-sm">Распределить</button>
                 <!-- Модальное окно -->
-                <div id="loginModal" class="modal">
+                <div id="loginModal" class="modal" style="display:none;">
+                    <div class="modal-l">
+                        <span class="close">&times;</span>
+                        <h2>Назначение заявки №{{ ticket.id }}</h2>
+                        <p><strong>Заголовок:</strong> {{ ticket.title }}</p>
+                        <p><strong>Описание:</strong> {{ ticket.description }}</p>
+
+                        <form method="post" action="/tickets/{{ ticket.id }}/assign">
+                            <label for="technician">Выберите техника:</label>
+                            <select name="technician_id" id="technician" required>
+                                {% for tech in technicians %}
+                                <option value="{{ tech.id }}">{{ tech.name }} ({{ tech.email }})</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary mt-2">Назначить</button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    const modal = document.getElementById("loginModal");
+                    const openBtn = document.getElementById("openLogin");
+                    const closeBtn = document.querySelector(".close");
+
+                    openBtn.onclick = () => modal.style.display = "block";
+                    closeBtn.onclick = () => modal.style.display = "none";
+                    window.onclick = (e) => {
+                        if (e.target == modal) modal.style.display = "none";
+                    };
+                </script>
+            </td>
+
+            <td>
+                <button id="openLogin{{ ticket.id }}" class="btn btn-outline-primary btn-sm">Открыть</button>
+                <!-- Модальное окно -->
+                <div id="loginModal{{ ticket.id }}" class="modal">
                     <div class="modal-l">
                         <span class="close">&times;</span>
                         <h2>{{ ticket.title }}</h2>
@@ -65,7 +97,6 @@
                         <p><strong>Место:</strong> {{ ticket.location }}</p>
                         <p><strong>Статус:</strong> {{ ticket.status }}</p>
                         <p><strong>Приоритет:</strong> {{ ticket.priority }}</p>
-                        <p><strong>Создана:</strong> {{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
 
                         {% if ticket.attachments %}
                         <h4>Вложения:</h4>
@@ -104,21 +135,26 @@
                         </form>
                     </div>
                 </div>
+                <!-- Скрипт для модального окна (уникальный для каждой заявки) -->
                 <script>
-                    const modal = document.getElementById("loginModal");
-                    const openBtn = document.getElementById("openLogin");
-                    const closeBtn = document.querySelector(".close");
+                    const modal{{ ticket.id }} = document.getElementById("loginModal{{ ticket.id }}");
+                    const openBtn{{ ticket.id }} = document.getElementById("openLogin{{ ticket.id }}");
+                    const closeBtn{{ ticket.id }} = modal{{ ticket.id }}.querySelector(".close");
 
-                    openBtn.onclick = () => modal.style.display = "block";
-                    closeBtn.onclick = () => modal.style.display = "none";
+                    openBtn{{ ticket.id }}.onclick = () => modal{{ ticket.id }}.style.display = "block";
+                    closeBtn{{ ticket.id }}.onclick = () => modal{{ ticket.id }}.style.display = "none";
                     window.onclick = (e) => {
-                        if (e.target == modal) modal.style.display = "none";
+                        if (e.target == modal{{ ticket.id }}) modal{{ ticket.id }}.style.display = "none";
                     };
                 </script>
             </td>
         </tr>
+        {% else %}
+        <!-- Если заявок нет -->
+        <tr>
+            <td colspan="6" class="text-center">Заявок нет</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
-
 {% endblock %}

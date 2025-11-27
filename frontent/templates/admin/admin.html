@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="row g-4">
     <div class="col-12">
         <!-- Карточка для управления пользователями -->
@@ -15,12 +16,56 @@
             <div class="card-body">
                 <p>Просмотр, редактирование и добавление пользователей.</p>
                 <a href="/admin/users" class="btn btn-outline-primary">Список пользователей</a>
-                <a href="/admin/users/add" class="btn btn-outline-success ms-2">Добавить пользователя</a>
+                <button id="openLogin" class="btn btn-outline-success ms-2">Добавить пользователя</button>
+                <!-- Модальное окно -->
+                <div id="loginModal" class="modal">
+                    <div class="modal-u">
+                        <span class="close">&times;</span>
+                        <h2>Добавление нового пользователя</h2>
+                        <form method="post" action="/admin/users/create">
+                            <div class="mb-3">
+                                <label class="form-label">Имя пользователя</label>
+                                <input name="name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Пароль</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Роль</label>
+                                <select name="role" class="form-select">
+                                    <option value="1">Пользователь</option>
+                                    <option value="2">Менеджер</option>
+                                    <option value="3">Техник</option>
+                                    <option value="4">Администратор</option>
+                                </select>
+                            </div>
+
+
+                            <button type="submit" class="btn btn-success">Создать</button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    const modal = document.getElementById("loginModal");
+                    const openBtn = document.getElementById("openLogin");
+                    const closeBtn = document.querySelector(".close");
+
+                    openBtn.onclick = () => modal.style.display = "block";
+                    closeBtn.onclick = () => modal.style.display = "none";
+                    window.onclick = (e) => {
+                        if (e.target == modal) modal.style.display = "none";
+                    };
+                </script>
             </div>
         </div>
     </div>
     <div class="col-12">
-        <!-- Карточка для заявок -->
+    <!-- Карточка для заявок -->
         <div class="card border-info mt-3">
             <div class="card-header bg-info text-white">Заявки</div>
             <div class="card-body">
